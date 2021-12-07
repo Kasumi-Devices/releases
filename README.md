@@ -28,7 +28,7 @@
 
 OR
 
-5. If you've already built Android on your PC, run `clean.sh`
+5. If you've already built Android on your PC, install `haste` using `gem install haste` and run `clean.sh`
 
 
 ## How to use this repo (Jenkins)
@@ -57,7 +57,7 @@ OR
 
 * `TELEGRAM_TOKEN` - the token of your Telegram Bot.
 
-10. Switch to the root user and install the binaries in the `bin` folder to `/usr/bin`.
+10. Switch to the root user and install the binaries in the `bin` folder to `/usr/bin` and install `haste` using `gem install haste`.
 
 ## Configuration flags
 
@@ -70,6 +70,12 @@ You'll need to put your own images into assets folder in the repo. Check "Announ
 `GITHUB_USER` - your GitHub username
 
 `GITHUB_EMAIL` - your GitHub email
+
+`HASTE_SERVER` - Hastebin server build logs will be provided through
+
+```
+You need to have haste installed in order to provide logs. Revert the commits towards this on your fork if you don't want to use it.
+```
 
 `device` - your device codename (e.g. `blueline` for Pixel 3)
 

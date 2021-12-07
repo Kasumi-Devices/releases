@@ -5,6 +5,8 @@ export RELEASES_DIR=$(pwd)
 export GITHUB_USER="alexwcrafter"
 export GITHUB_EMAIL="kontakt@ayokaacr.de"
 
+export HASTE_SERVER="https://paste.ayokaacr.tk"
+
 export device="sofiap"
 export ROM="Lineage"
 export ROM_DIR="${WORKSPACE}/rom"

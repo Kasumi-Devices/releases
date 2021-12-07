@@ -34,7 +34,7 @@ elif [ "${clean}" == "installclean" ]; then
 fi
 (( cores = $(nproc --all) * 2 ))
 export cores
-make "${bacon}" -j${cores}
+make "${bacon}" -j${cores} | tee log.txt
 BUILD_END=$(date +"%s")
 BUILD_DIFF=$((BUILD_END - BUILD_START))
 
@@ -75,7 +75,7 @@ Date: $(env TZ="${timezone}" date)" "${finalzip_path}"
 Date: $(env TZ="${timezone}" date)" "${incremental_zip_path}"
         elif [ ! -e "${incremental_zip_path}" ] && [ "${old_target_files_exists}" == "true" ]; then
             echo "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
-            telegram -i ${RELEASES_DIR}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
+            telegram -i ${RELEASES_DIR}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds - [See logs] ($(haste log.txt))"
             curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAADBQADGgEAAixuhBPbSa3YLUZ8DBYE --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
             exit 1
         fi
@@ -87,7 +87,7 @@ Date: $(env TZ="${timezone}" date)" "${incremental_zip_path}"
 Date: $(env TZ="${timezone}" date)" "${img_path}"
         else
             echo "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
-            telegram -i ${RELEASES_DIR}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
+            telegram -i ${RELEASES_DIR}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds - [See logs]($(haste log.txt))"
             curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAADBQADGgEAAixuhBPbSa3YLUZ8DBYE --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
             exit 1
         fi
@@ -125,7 +125,7 @@ curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAADBQA
 
 else
     echo "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
-    telegram -i ${RELEASES_DIR}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
+    telegram -i ${RELEASES_DIR}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds - [See logs]($(haste log.txt))"
     curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAADBQADGgEAAixuhBPbSa3YLUZ8DBYE --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
     exit 1
 fi
