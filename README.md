@@ -1,4 +1,6 @@
 # Build scripts
+**THIS SCRIPT NEEDS SOME CONFIGS IN THE JENKINS!**
+**Don't complain if it doesn't work for you**
 
 **DISCLAIMER**: This is only for Debian-based distributions. WSL is **NOT** supported.
 
