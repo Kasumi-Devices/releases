@@ -1,0 +1,18 @@
+*Maintenance.done!*
+
+Case: Kernel compiling fails with `-fstack-protector-strong not supported by compiler` while building inline with ROM even though there isn't such issue on standalone build.
+
+Action dropping server into maintenance: System restore with a disk backup
+
+Maintenance start: 16:40 GMT+3
+Estimated maintenance end: 17:21 GMT+3
+
+*Attention for users of the server: Make sure you delete ~/.ssh/known_hosts file before reconnecting! Host ID has changed!*
+
+Maintenance consequences;
+*/ Severe data loss*
+/ Host SSH ID change
+
+One last touch: Enabling password auth and setting password.
+
+_ Thanks for your patience!_

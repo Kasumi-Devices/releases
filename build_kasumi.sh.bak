@@ -1,10 +1,6 @@
 #!/bin/bash
 
 export outdir="${ROM_DIR}/out/target/product/${device}"
-pushd device/*/${device}
-sed -i -e 's/cm/ev/g' -e 's/lineage/ev/g' lineage.mk
-rename 's/lineage/ev/' lineage.mk
-popd
 BUILD_START=$(date +"%s")
 echo "Build started for ${device}"
 if [ "${jenkins}" == "true" ]; then
@@ -13,10 +9,9 @@ else
     telegram -M "Build started for ${device}"
 fi
 source build/envsetup.sh
-source "${my_dir}/config.sh"
-export RELEASES_DIR=$(echo $(cd -))
+source "${my_dir}/config_kasumi.sh"
 if [ "${official}" == "true" ]; then
-    export CUSTOM_BUILD_TYPE="OFFICIAL"
+    export LINEAGE_BUILDTYPE="OFFICIAL"
 fi
 if [ -z "${buildtype}" ]; then
     export buildtype="userdebug"
@@ -38,7 +33,19 @@ elif [ "${clean}" == "installclean" ]; then
 fi
 (( cores = $(nproc --all) * 2 ))
 export cores
-make "${bacon}" -j${cores} | tee log.txt
+make "${bacon}" -j${cores}
+if [ "${official}" == "true" ]; then
+    echo "You built official. Signing..."
+    telegram -N -M "This build is official. Signing..."
+    make otatools target-files-package -j${cores}
+    export outdir=out/target/product/${device}
+    export unsigned_finalzip_path=$(ls "${outdir}"/*$(date +%Y)*.zip | tail -n -1)
+    mv "$unsigned_finalzip_path" "${unsigned_finalzip_path}.unsigned"
+    sign_target_files_apks -o -d vendor/priv $OUT/obj/PACKAGING/target_files_intermediates/*-target_files-*.zip $OUT/signed-target_files.zip
+    ota_from_target_files -k vendor/priv/releasekey --block --backup=true $OUT/signed-target_files.zip $OUT/$(basename "$unsigned_finalzip_path")
+    echo "Signed!"
+    telegram -N -M "Signing done~!"
+fi
 BUILD_END=$(date +"%s")
 BUILD_DIFF=$((BUILD_END - BUILD_START))
 
@@ -64,6 +71,7 @@ export zip_name=$(echo "${finalzip_path}" | sed "s|${outdir}/||")
 export tag=$( echo "${zip_name}-$(date +%H%M)" | sed 's|.zip||')
 if [ -e "${finalzip_path}" ]; then
     echo "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
+    curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAACAgUAAxkBAAEKizNg1iGp3Ab536Qz86F_Esy7chQvHAACOwEAAnBI8ReBayrk9vj3ciAE --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
 
 
     echo "Uploading"
@@ -78,7 +86,8 @@ Date: $(env TZ="${timezone}" date)" "${finalzip_path}"
 Date: $(env TZ="${timezone}" date)" "${incremental_zip_path}"
         elif [ ! -e "${incremental_zip_path}" ] && [ "${old_target_files_exists}" == "true" ]; then
             echo "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
-            telegram -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds - [See logs]($(haste log.txt))"
+            telegram -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
+            curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAADBQADGgEAAixuhBPbSa3YLUZ8DBYE --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
             exit 1
         fi
     fi
@@ -89,7 +98,8 @@ Date: $(env TZ="${timezone}" date)" "${incremental_zip_path}"
 Date: $(env TZ="${timezone}" date)" "${img_path}"
         else
             echo "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
-            telegram -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds - [See logs]($(haste log.txt))"
+            telegram -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
+            curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAADBQADGgEAAixuhBPbSa3YLUZ8DBYE --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
             exit 1
         fi
     fi
@@ -119,14 +129,14 @@ Download incremental update: ["incremental_ota_update.zip"]("https://github.com/
 
 Download: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/${tag}/${zip_name}")
 
-Download from Hisoka's Drive: ["${zip_name}"]("https://drive.hisoka.workers.dev/Beru%20Shinsetsu/${zip_name}")
-
-Download from Ayoka's Drive: ["${zip_name}"]("https://dl.ayokaacr.tk/5:/${zip_name}")"
+Download from owZ' Builds: ["${zip_name}"]("https://dl.ayokaacr.tk/4:/${device}/${zip_name}")"
         fi
     fi
+curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAADBQADGgEAAixuhBPbSa3YLUZ8DBYE --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
 
 else
     echo "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
-    telegram -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds - [See logs]($(haste log.txt))"
+    telegram -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
+    curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAADBQADGgEAAixuhBPbSa3YLUZ8DBYE --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
     exit 1
 fi
