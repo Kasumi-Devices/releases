@@ -13,7 +13,7 @@ fi
 source build/envsetup.sh
 export RELEASES_DIR=$(echo $(cd -))
 if [ "${official}" == "true" ]; then
-    export CUSTOM_BUILD_TYPE="OFFICIAL"
+    export LINEAGE_BUILDTYPE="OFFICIAL"
 fi
 if [ -z "${buildtype}" ]; then
     export buildtype="userdebug"
@@ -62,8 +62,6 @@ export tag=$( echo "${zip_name}-$(date +%H%M)" | sed 's|.zip||')
 if [ -e "${finalzip_path}" ]; then
     echo "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
     curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAACAgUAAxkBAAEHqUxh2FpZphr2MPJY8gABYovHqxtWDIUAAjsBAAJwSPEXgWsq5Pb493IjBA --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
-    
-    
     echo "Uploading"
     gdrive upload "${finalzip_path}"
     github-release "${release_repo}" "${tag}" "master" "${ROM} for ${device}
@@ -76,8 +74,7 @@ if [ -e "${finalzip_path}" ]; then
             Date: $(env TZ="${timezone}" date)" "${incremental_zip_path}"
             elif [ ! -e "${incremental_zip_path}" ] && [ "${old_target_files_exists}" == "true" ]; then
             echo "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
-            telegram -i ${RELEASES_DIR}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds - [See logs] ($(haste log.txt))"
-            #curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAADBQADGgEAAixuhBPbSa3YLUZ8DBYE --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
+            telegram -i ${RELEASES_DIR}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
             exit 1
         fi
     fi
@@ -88,13 +85,11 @@ if [ -e "${finalzip_path}" ]; then
             Date: $(env TZ="${timezone}" date)" "${img_path}"
         else
             echo "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
-            telegram -i ${RELEASES_DIR}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds - [See logs]($(haste log.txt))"
-            #curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAADBQADGgEAAixuhBPbSa3YLUZ8DBYE --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
+            telegram -i ${RELEASES_DIR}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
             exit 1
         fi
     fi
     echo "Uploaded"
-    
     if [ "${upload_recovery}" == "true" ]; then
         if [ "${old_target_files_exists}" == "true" ]; then
             telegram -i ${RELEASES_DIR}/assets/build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
@@ -119,14 +114,11 @@ Download: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/
 
 Download: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/${tag}/${zip_name}")
 
-            Download from owZ' Builds: ["${zip_name}"]("https://dl.ayokaacr.de/5:/${zip_name}")"
+Download from owZ' Builds: ["${zip_name}"]("https://dl.ayokaacr.de/4:/${device}/${zip_name}")"
         fi
     fi
-    #curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAADBQADGgEAAixuhBPbSa3YLUZ8DBYE --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
-    
 else
     echo "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
-    telegram -i ${RELEASES_DIR}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds - [See logs]($(haste log.txt))"
-    #curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAADBQADGgEAAixuhBPbSa3YLUZ8DBYE --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
+    telegram -i ${RELEASES_DIR}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
     exit 1
 fi

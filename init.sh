@@ -16,6 +16,5 @@ if [ ! -f /usr/bin/telegram ]; then
 elif [ ! -f /usr/bin/github-release ]; then
     sudo install bin/github-release /usr/bin
 fi
-gem install haste
 echo "Starting build process..."
 source clean.sh
