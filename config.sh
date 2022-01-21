@@ -18,7 +18,7 @@ export manifest_url_display="https://github.com/ProjectKasumi/android" # This ma
 export manifest_url="https://github.com/Kasumi-Devices/android_withkeys" # This manifest will be used for syncing to reduce heavy use of Git separately.
 export rom_vendor_name="kasumi"
 export branch="kasumi-v1"
-export bacon="bandori"
+#export bacon="bandori" is managed by jenkins
 # Variable "buildtype" is managed by Jenkins.
 export clean="installclean"
 export generate_incremental=""
