@@ -38,7 +38,7 @@ export cores
 make "${bacon}" -j${cores} | tee log.txt
 BUILD_END=$(date +"%s")
 BUILD_DIFF=$((BUILD_END - BUILD_START))
-
+if [ "${bacon}" == "bandori" ]; then
 if [ "${generate_incremental}" == "true" ]; then
     if [ -e "${ROM_DIR}"/*target_files*.zip ]; then
         export old_target_files_exists=true
@@ -121,4 +121,10 @@ else
     echo "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
     telegram -i ${RELEASES_DIR}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
     exit 1
+fi
+else
+    echo "Build process ended in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
+    telegram -i ${RELEASES_DIR}/assets/build3.png -M "Build process ended in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds.
+
+This build target wasn't regular one so nothing was uploaded. Check logs for full progress."
 fi
