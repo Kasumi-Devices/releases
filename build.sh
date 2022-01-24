@@ -114,7 +114,7 @@ Download: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/
 
 Download: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/${tag}/${zip_name}")
 
-Download from owZ' Builds: ["${zip_name}"]("https://dl.ayokaacr.de/4:/${device}/${zip_name}")"
+Download from official storage: ["${zip_name}"]("https://dl.ayokaacr.tk/4:/${device}/${zip_name}")"
         fi
     fi
 else
