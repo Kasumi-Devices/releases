@@ -20,7 +20,7 @@ export rom_vendor_name="kasumi"
 export branch="kasumi-v1"
 # Variable "bacon" is managed by jenkins
 # Variable "buildtype" is managed by Jenkins.
-export clean="installclean"
+export clean=""
 export generate_incremental=""
 # Variable "upload_recovery" is managed by Jenkins.
 
