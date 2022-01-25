@@ -110,11 +110,34 @@ Download ROM: ["${zip_name}"]("https://github.com/${release_repo}/releases/downl
 Download: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/${tag}/${zip_name}")
             Download incremental update: ["incremental_ota_update.zip"]("https://github.com/${release_repo}/releases/download/${tag}/incremental_ota_update.zip")"
         else
+            otacontent=$(echo -n {\"datetime\": `cat $(dirname $1)/ota_metadata | cut -d "=" --output-delimiter "," -f 1,2 | awk -F, -v findex=1 -v value=post-timestamp '$findex == value {print}' | cut -d, -f 2`,\"filename\": \"`basename $1`\",\"id\": \"`sha256sum $1 | awk '{ print $1 }'`\",\"romtype\": \"official\",\"size\": `stat -c%s $1`,\"url\": \"https://github.com/${release_repo}/releases/download/${tag}/${zip_name}\",\"version\": \"1.0\"})
             telegram -i ${RELEASES_DIR}/assets/build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
 
 Download: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/${tag}/${zip_name}")
 
 Download from official storage: ["${zip_name}"]("https://dl.ayokaacr.tk/4:/${device}/${zip_name}")"
+
+            echo "Generating OTA JSON and pushing it..."
+            if [ ! -d vendor/kasumiota ]; then
+                git clone https://github.com/ProjectKasumi/android_vendor_kasumiota vendor/kasumiota
+            fi
+            pushd vendor/kasumiota
+            git pull
+            if [ "${KASUMI_BUILD_TYPE}" == "vanilla" ]; then
+                echo ${otacontent} > ${device}.json
+            else
+                if [ ! -d "${KASUMI_BUILD_TYPE}" ]; then
+                    mkdir "${KASUMI_BUILD_TYPE}"
+                fi
+                cd "${KASUMI_BUILD_TYPE}"
+                echo ${otacontent} > ${device}.json
+                cd -
+            fi
+            git add .
+            git commitsigned -m $(echo -e "Push new OTA for ${device}\n\n* Build type: ${KASUMI_BUILD_TYPE}\n\n* This commit is automated through Jenkins.")
+            git push
+            popd
+            telegram -M "OTA has been pushed. Users should check for updates through Settings > System > Advanced > Updater!"
         fi
     fi
 else
