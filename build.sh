@@ -110,7 +110,6 @@ Download ROM: ["${zip_name}"]("https://github.com/${release_repo}/releases/downl
 Download: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/${tag}/${zip_name}")
             Download incremental update: ["incremental_ota_update.zip"]("https://github.com/${release_repo}/releases/download/${tag}/incremental_ota_update.zip")"
         else
-            otacontent=$(echo -n {\"datetime\": $(cat $(dirname ${finalzip_path})/ota_metadata | cut -d "=" --output-delimiter "," -f 1,2 | awk -F, -v findex=1 -v value=post-timestamp '$findex == value {print}' | cut -d, -f 2),\"filename\": \"$(basename ${finalzip_path})\",\"id\": \"$(sha256sum ${finalzip_path} | sed 's/ .*//g')\",\"romtype\": \"official\",\"size\": $(stat -c%s ${finalzip_path}),\"url\": \"https://github.com/${release_repo}/releases/download/${tag}/${zip_name}\",\"version\": \"1.0\"})
             telegram -i ${RELEASES_DIR}/assets/build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
 
 Download: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/${tag}/${zip_name}")
@@ -118,25 +117,22 @@ Download: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/
 Download from official storage: ["${zip_name}"]("https://dl.ayokaacr.tk/4:/${device}/${zip_name}")"
 
             echo "Generating OTA JSON and pushing it..."
-            if [ ! -d vendor/kasumiota ]; then
+            if [ ! -d vendor/kasumiota/.git ]; then
                 git clone https://github.com/ProjectKasumi/android_vendor_kasumiota vendor/kasumiota
+            fi
+            if [ ! -d vendor/kasumi/otagen/.git ]; then
+                git clone https://github.com/Kasumi-Devices/android_vendor_kasumi_otagen vendor/kasumi/otagen
             fi
             pushd vendor/kasumiota
             git pull
-            if [ "${KASUMI_BUILD_TYPE}" == "vanilla" ]; then
-                echo ${otacontent} > ${device}.json
-            else
-                if [ ! -d "${KASUMI_BUILD_TYPE}" ]; then
-                    mkdir "${KASUMI_BUILD_TYPE}"
-                fi
-                cd "${KASUMI_BUILD_TYPE}"
-                echo ${otacontent} > ${device}.json
-                cd -
-            fi
+            pushd ../kasumi/otagen
+            source gen_ota_json.sh
+            popd
             git add .
             git commitsigned -m "$(echo -e "Push new OTA for ${device}\n\n* Build type: ${KASUMI_BUILD_TYPE}\n\n* This commit is automated through Jenkins.")"
             git push
             popd
+            echo "All done!"
             telegram -M "OTA has been pushed. Users should check for updates through Settings > System > Advanced > Updater!"
         fi
     fi
