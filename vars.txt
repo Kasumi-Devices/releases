@@ -5,3 +5,13 @@ s2 - Vanilla only - No addon
 lava - Vanilla only - AdAway
 
 chiron - Vanilla & GApps - No addon
+
+santoni - Vanilla & GApps - AdAway & Lawnchair
+
+mido - Vanilla only - Lawnchair
+
+a70q - Vanilla & AuroraOSS - AdAway & Lawnchair
+
+cedric - Vanilla & GApps - No addon
+
+seed - Vanilla only - No addon
