@@ -116,24 +116,29 @@ Download: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/
 
 Download from official storage: ["${zip_name}"]("https://dl.ayokaacr.tk/4:/${device}/${zip_name}")"
 
-            echo "Generating OTA JSON and pushing it..."
-            if [ ! -d vendor/kasumiota/.git ]; then
-                git clone https://github.com/ProjectKasumi/android_vendor_kasumiota vendor/kasumiota
+            if [ "${internal_build}" == "true" ]
+                echo "This build is internal and won't have OTA pushed."
+                telegram -M "The build above won't have OTA pushed upon request by maintainer. ^"
+            else
+                echo "Generating OTA JSON and pushing it..."
+                if [ ! -d vendor/kasumiota/.git ]; then
+                    git clone https://github.com/ProjectKasumi/android_vendor_kasumiota vendor/kasumiota
+                fi
+                if [ ! -d vendor/kasumi/otagen/.git ]; then
+                    git clone https://github.com/Kasumi-Devices/android_vendor_kasumi_otagen vendor/kasumi/otagen
+                fi
+                pushd vendor/kasumiota
+                git pull
+                pushd ../kasumi/otagen
+                source gen_ota_json.sh
+                popd
+                git add .
+                git commitsigned -m "$(echo -e "Push new OTA for ${device}\n\n* Build type: ${KASUMI_BUILD_TYPE}\n\n* This commit is automated through Jenkins.")"
+                git push
+                popd
+                echo "All done!"
+                telegram -M "OTA has been pushed. Users should check for updates through Settings > System > Advanced > Updater!"
             fi
-            if [ ! -d vendor/kasumi/otagen/.git ]; then
-                git clone https://github.com/Kasumi-Devices/android_vendor_kasumi_otagen vendor/kasumi/otagen
-            fi
-            pushd vendor/kasumiota
-            git pull
-            pushd ../kasumi/otagen
-            source gen_ota_json.sh
-            popd
-            git add .
-            git commitsigned -m "$(echo -e "Push new OTA for ${device}\n\n* Build type: ${KASUMI_BUILD_TYPE}\n\n* This commit is automated through Jenkins.")"
-            git push
-            popd
-            echo "All done!"
-            telegram -M "OTA has been pushed. Users should check for updates through Settings > System > Advanced > Updater!"
         fi
     fi
 else

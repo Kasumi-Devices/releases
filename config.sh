@@ -7,6 +7,7 @@ export GITHUB_EMAIL="windowz414@projectkasumi.xyz"
 
 export HASTE_SERVER="https://paste.ayokaacr.tk"
 
+# Variable "internal_build" is managed by Jenkins.
 # Variable "device" is managed by Jenkins.
 export ROM="Project Kasumi"
 export ROM_DIR="${WORKSPACE}/kasumi"
