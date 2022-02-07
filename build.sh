@@ -116,7 +116,7 @@ Download: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/
 
 Download from official storage: ["${zip_name}"]("https://dl.ayokaacr.tk/4:/${device}/${zip_name}")"
 
-            if [ "${internal_build}" == "true" ]
+            if [ "${internal_build}" == "true" ]; then
                 echo "This build is internal and won't have OTA pushed."
                 telegram -M "The build above won't have OTA pushed upon request by maintainer. ^"
             else
