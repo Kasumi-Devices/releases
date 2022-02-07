@@ -30,6 +30,7 @@ export ccache_size=""
 
 export jenkins="true"
 
-export release_repo="Kasumi-Devices/releases"
+export release_repo_github="Kasumi-Devices/releases"
+export release_repo_id_polycule="42"
 
 export timezone="UTC"

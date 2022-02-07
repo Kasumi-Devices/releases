@@ -64,12 +64,12 @@ if [ -e "${finalzip_path}" ]; then
     curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAACAgUAAxkBAAEHqUxh2FpZphr2MPJY8gABYovHqxtWDIUAAjsBAAJwSPEXgWsq5Pb493IjBA --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
     echo "Uploading"
     gdrive upload "${finalzip_path}"
-    github-release "${release_repo}" "${tag}" "master" "${ROM} for ${device}
-
+    github-release "${release_repo_github}" "${tag}" "master" "${ROM} for ${device}
     Date: $(env TZ="${timezone}" date)" "${finalzip_path}"
+    curl --header 'Content-Type: application/json' --header "PRIVATE-TOKEN: ${POLYAMOROUS_TOKEN}" --data '{ "name": "${ROM} ${ROM_VERSION} for ${device}", "tag_name": "${tag}", "ref": "master", "assets": { "links": [{ "name": "${zip_name}", "url": "https://github.com/${release_repo_github}/releases/download/${tag}/${zip_name}", "filepath": "/${zip_name}", "link_type":"package" }] } }' --request POST "https://git.polycule.co/api/v4/projects/${release_repo_id_polycule}/releases"
     if [ "${generate_incremental}" == "true" ]; then
         if [ -e "${incremental_zip_path}" ] && [ "${old_target_files_exists}" == "true" ]; then
-            github-release "${release_repo}" "${tag}" "master" "${ROM} for ${device}
+            github-release "${release_repo_github}" "${tag}" "master" "${ROM} for ${device}
 
             Date: $(env TZ="${timezone}" date)" "${incremental_zip_path}"
             elif [ ! -e "${incremental_zip_path}" ] && [ "${old_target_files_exists}" == "true" ]; then
@@ -80,7 +80,7 @@ if [ -e "${finalzip_path}" ]; then
     fi
     if [ "${upload_recovery}" == "true" ]; then
         if [ -e "${img_path}" ]; then
-            github-release "${release_repo}" "${tag}" "master" "${ROM} for ${device}
+            github-release "${release_repo_github}" "${tag}" "master" "${ROM} for ${device}
 
             Date: $(env TZ="${timezone}" date)" "${img_path}"
         else
@@ -94,25 +94,25 @@ if [ -e "${finalzip_path}" ]; then
         if [ "${old_target_files_exists}" == "true" ]; then
             telegram -i ${RELEASES_DIR}/assets/build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
 
-Download ROM: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/${tag}/${zip_name}")
-Download incremental update: ["incremental_ota_update.zip"]("https://github.com/${release_repo}/releases/download/${tag}/incremental_ota_update.zip")
-            Download recovery: ["recovery.img"]("https://github.com/${release_repo}/releases/download/${tag}/recovery.img")"
+Download ROM: ["${zip_name}"]("https://github.com/${release_repo_github}/releases/download/${tag}/${zip_name}")
+Download incremental update: ["incremental_ota_update.zip"]("https://github.com/${release_repo_github}/releases/download/${tag}/incremental_ota_update.zip")
+            Download recovery: ["recovery.img"]("https://github.com/${release_repo_github}/releases/download/${tag}/recovery.img")"
         else
             telegram -i ${RELEASES_DIR}/assets	build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
 
-Download ROM: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/${tag}/${zip_name}")
-            Download recovery: ["recovery.img"]("https://github.com/${release_repo}/releases/download/${tag}/recovery.img")"
+Download ROM: ["${zip_name}"]("https://github.com/${release_repo_github}/releases/download/${tag}/${zip_name}")
+            Download recovery: ["recovery.img"]("https://github.com/${release_repo_github}/releases/download/${tag}/recovery.img")"
         fi
     else
         if [ "${old_target_files_exists}" == "true" ]; then
             telegram -i ${RELEASES_DIR}/assets/build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
 
-Download: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/${tag}/${zip_name}")
-            Download incremental update: ["incremental_ota_update.zip"]("https://github.com/${release_repo}/releases/download/${tag}/incremental_ota_update.zip")"
+Download: ["${zip_name}"]("https://github.com/${release_repo_github}/releases/download/${tag}/${zip_name}")
+            Download incremental update: ["incremental_ota_update.zip"]("https://github.com/${release_repo_github}/releases/download/${tag}/incremental_ota_update.zip")"
         else
             telegram -i ${RELEASES_DIR}/assets/build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
 
-Download: ["${zip_name}"]("https://github.com/${release_repo}/releases/download/${tag}/${zip_name}")
+Download: ["${zip_name}"]("https://github.com/${release_repo_github}/releases/download/${tag}/${zip_name}")
 
 Download from official storage: ["${zip_name}"]("https://dl.ayokaacr.tk/4:/${device}/${zip_name}")"
 
@@ -122,10 +122,13 @@ Download from official storage: ["${zip_name}"]("https://dl.ayokaacr.tk/4:/${dev
             else
                 echo "Generating OTA JSON and pushing it..."
                 if [ ! -d vendor/kasumiota/.git ]; then
-                    git clone https://github.com/ProjectKasumi/android_vendor_kasumiota vendor/kasumiota
+                    git clone https://git.polycule.co/ProjectKasumi/android/vendor_kasumiota vendor/kasumiota
+                    pushd vendor/kasumiota
+                    git remote add gh https://github.com/ProjectKasumi/android_vendor_kasumiota
+                    popd
                 fi
                 if [ ! -d vendor/kasumi/otagen/.git ]; then
-                    git clone https://github.com/Kasumi-Devices/android_vendor_kasumi_otagen vendor/kasumi/otagen
+                    git clone https://git.polycule.co/ProjectKasumi/infra/vendor_kasumi_otagen vendor/kasumi/otagen
                 fi
                 pushd vendor/kasumiota
                 git pull
@@ -135,6 +138,7 @@ Download from official storage: ["${zip_name}"]("https://dl.ayokaacr.tk/4:/${dev
                 git add .
                 git commitsigned -m "$(echo -e "Push new OTA for ${device}\n\n* Build type: ${KASUMI_BUILD_TYPE}\n\n* This commit is automated through Jenkins.")"
                 git push
+                git push gh kasumi-v1
                 popd
                 echo "All done!"
                 telegram -M "OTA has been pushed. Users should check for updates through Settings > System > Advanced > Updater!"

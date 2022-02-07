@@ -14,8 +14,9 @@ source config.sh
 
 # These variables are all managed by Jenkins;
 # GITHUB_TOKEN
-# TELEGRAM_TOKEN
 # TELEGRAM_CHAT
+# TELEGRAM_TOKEN
+# POLYAMOROUS_TOKEN
 # BUILD_NUMBER
 
 if [ "${forceclean}" ]; then
