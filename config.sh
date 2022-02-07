@@ -15,8 +15,8 @@ export ROM_VERSION="v1.0"
 export official="true"
 # Variable "forceclean" is managed by Jenkins.
 export local_manifest_url=""
-export manifest_url_display="https://github.com/ProjectKasumi/android" # This manifest will be shown to make sure users are able to sync successfully and build unofficially.
-export manifest_url="https://github.com/Kasumi-Devices/android_withkeys" # This manifest will be used for syncing to reduce heavy use of Git separately.
+export manifest_url_display="https://git.polycule.co/ProjectKasumi/android/manifest.git" # This manifest will be shown to make sure users are able to sync successfully and build unofficially.
+export manifest_url="https://git.polycule.co/ProjectKasumi/infra/manifest.git" # This manifest will be used for syncing to reduce heavy use of Git separately.
 export rom_vendor_name="kasumi"
 export branch="kasumi-v1"
 # Variable "bacon" is managed by jenkins
