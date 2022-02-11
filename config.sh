@@ -3,7 +3,7 @@
 export RELEASES_DIR=$(pwd)
 
 export GITHUB_USER="Beru Shinsetsu"
-export GITHUB_EMAIL="windowz414@projectkasumi.xyz"
+export GITHUB_EMAIL="windowz414@1337.lgbt"
 
 export HASTE_SERVER="https://paste.ayokaacr.tk"
 
