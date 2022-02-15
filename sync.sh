@@ -14,7 +14,11 @@ if [ "${no_sync}" != "true" ]; then
     if [ "${cores}" -gt "12" ]; then
         cores=12
     fi
-    repo sync --force-sync --no-tags --no-clone-bundle --optimized-fetch --prune "-j${cores}" -c -v
+    if [ -z "${sync_projs}" ]; then
+        repo sync --force-sync --no-tags --no-clone-bundle --optimized-fetch --prune "-j${cores}" -c -v
+    else
+        repo sync --force-sync --no-tags --no-clone-bundle --optimized-fetch --prune "-j${cores}" -c -v ${sync_projs}
+    fi
     syncsuccessful="${?}"
     SYNC_END=$(date +"%s")
     SYNC_DIFF=$((SYNC_END - SYNC_START))
