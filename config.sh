@@ -22,6 +22,7 @@ export branch="kasumi-v1"
 # Variable "bacon" is managed by jenkins
 # Variable "buildtype" is managed by Jenkins.
 # Variable "clean" is managed by Jenkins.
+# Variable "no_sync" is managed by Jenkins.
 export generate_incremental=""
 # Variable "upload_recovery" is managed by Jenkins.
 
