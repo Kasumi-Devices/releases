@@ -1,6 +1,6 @@
 #!/bin/bash
 
-source config.sh
+source ${RELEASES_DIR}/config.sh
 
 export outdir="${ROM_DIR}/out/target/product/${device}"
 BUILD_START=$(date +"%s")
