@@ -114,7 +114,7 @@ Download: ["${zip_name}"]("https://github.com/${release_repo_github}/releases/do
 
 Download: ["${zip_name}"]("https://github.com/${release_repo_github}/releases/download/${tag}/${zip_name}")
 
-Download from official storage: ["${zip_name}"]("https://dl.ayokaacr.tk/4:/${device}/${zip_name}")"
+Download from official storage: ["${zip_name}"]("https://dl.ayokaacr.net/4:/${device}/${zip_name}")"
 
             if [ "${internal_build}" == "true" ]; then
                 echo "This build is internal and won't have OTA pushed."
@@ -141,7 +141,8 @@ Download from official storage: ["${zip_name}"]("https://dl.ayokaacr.tk/4:/${dev
                 git push gh kasumi-v1
                 popd
                 echo "All done!"
-                telegram -M "OTA has been pushed. Users should check for updates through Settings > System > Advanced > Updater!"
+                telegram -M "OTA has been pushed. Users should check for updates through Settings > System > Advanced > Updater! Kasumi is going to announce the build at @ProjectKasumi now!"
+                source ${my_dir}/announce.sh
             fi
         fi
     fi
