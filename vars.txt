@@ -10,8 +10,8 @@ santoni - Vanilla & GApps - AdAway & Lawnchair
 
 mido - Vanilla only - Lawnchair
 
-a70q - Vanilla & AuroraOSS - AdAway & Lawnchair
-
 cedric - Vanilla & GApps - No addon
 
-seed - Vanilla only - No addon
+chiron - Vanilla & Gapps - No addon
+
+garden - Vanilla & Gapps - No addon
