@@ -10,15 +10,9 @@ if [ "${no_sync}" != "true" ]; then
     if [ -f .repo/local_manifests/default.xml ]; then
         rm .repo/local_manifests/default.xml
     fi
-    cores=$(nproc --all)
-    if [ "${cores}" -gt "12" ]; then
-        cores=12
-    fi
-    if [ -z "${sync_projs}" ]; then
-        repo sync --force-sync --no-tags --no-clone-bundle --optimized-fetch --prune "-j${cores}" -c -v
-    else
-        repo sync --force-sync --no-tags --no-clone-bundle --optimized-fetch --prune "-j${cores}" -c -v ${sync_projs}
-    fi
+    repo sync build/make external/tuuru vendor/kasumi
+    source build/envsetup.sh
+    reposync ${sync_speed} ${sync_projs}
     syncsuccessful="${?}"
     SYNC_END=$(date +"%s")
     SYNC_DIFF=$((SYNC_END - SYNC_START))

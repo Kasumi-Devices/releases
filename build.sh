@@ -25,17 +25,20 @@ if [ "${ccache}" == "true" ] && [ -n "${ccache_size}" ]; then
     echo "Please set the ccache_size variable in your config."
     exit 1
 fi
-lunch "${rom_vendor_name}_${device}-${buildtype}"
 rm "${outdir}"/*$(date +%Y)*.zip*
 if [ "${clean}" == "clean" ]; then
-    make clean
-    make clobber
+    export vibecheck=nohype
     elif [ "${clean}" == "installclean" ]; then
     make installclean
 fi
-(( cores = $(nproc --all) * 2 ))
-export cores
-make "${bacon}" -j${cores} | tee log.txt
+if [ "${bacon}" == "bandori" ]; then
+    play live ${rom_vendor_name}_${device}-${buildtype} ${vibecheck}
+else
+    # Instead of enforcing clean, tie instrument list to a for loop.
+    for instrument in ${bacon}; do
+        play instrument ${bacon} ${vibecheck}
+    done
+fi
 BUILD_END=$(date +"%s")
 BUILD_DIFF=$((BUILD_END - BUILD_START))
 if [ "${bacon}" == "bandori" ]; then
@@ -63,7 +66,9 @@ if [ -e "${finalzip_path}" ]; then
     echo "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
     curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAACAgUAAxkBAAEHqUxh2FpZphr2MPJY8gABYovHqxtWDIUAAjsBAAJwSPEXgWsq5Pb493IjBA --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
     echo "Uploading"
-    gdrive upload "${finalzip_path}"
+    if [ "${internal_build}" != "true" ]; then
+        gdrive upload "${finalzip_path}"
+    fi
     github-release "${release_repo_github}" "${tag}" "master" "${ROM} for ${device}
     Date: $(env TZ="${timezone}" date)" "${finalzip_path}"
     curl --header 'Content-Type: application/json' --header "PRIVATE-TOKEN: ${POLYAMOROUS_TOKEN}" --data '{ "name": "${ROM} ${ROM_VERSION} for ${device}", "tag_name": "${tag}", "ref": "master", "assets": { "links": [{ "name": "${zip_name}", "url": "https://github.com/${release_repo_github}/releases/download/${tag}/${zip_name}", "filepath": "/${zip_name}", "link_type":"package" }] } }' --request POST "https://git.polycule.co/api/v4/projects/${release_repo_id_polycule}/releases"
@@ -110,16 +115,19 @@ Download ROM: ["${zip_name}"]("https://github.com/${release_repo_github}/release
 Download: ["${zip_name}"]("https://github.com/${release_repo_github}/releases/download/${tag}/${zip_name}")
             Download incremental update: ["incremental_ota_update.zip"]("https://github.com/${release_repo_github}/releases/download/${tag}/incremental_ota_update.zip")"
         else
-            telegram -i ${my_dir}/assets/build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
+            if [ "${internal_build}" == "true" ]; then
+                telegram -i ${my_dir}/assets/build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
+
+Check ["Kasumi-CI Releases on GitHub"]("https://github.com/Kasumi-Devices/releases/releases") to get it!"
+                echo "This build is internal and won't have OTA pushed."
+                telegram -M "The build above won't have OTA pushed upon request by maintainer. ^"
+            else
+                telegram -i ${my_dir}/assets/build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
 
 Download: ["${zip_name}"]("https://github.com/${release_repo_github}/releases/download/${tag}/${zip_name}")
 
 Download from official storage: ["${zip_name}"]("https://dl.ayokaacr.net/4:/${device}/${zip_name}")"
 
-            if [ "${internal_build}" == "true" ]; then
-                echo "This build is internal and won't have OTA pushed."
-                telegram -M "The build above won't have OTA pushed upon request by maintainer. ^"
-            else
                 echo "Generating OTA JSON and pushing it..."
                 if [ ! -d vendor/kasumiota/.git ]; then
                     git clone https://git.polycule.co/ProjectKasumi/android/vendor_kasumiota vendor/kasumiota

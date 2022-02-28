@@ -22,6 +22,7 @@ export branch="kasumi-v1"
 # Variable "clean" is managed by Jenkins.
 # Variable "no_sync" is managed by Jenkins.
 # Variable "sync_projs" is managed by Jenkins.
+# Variable "sync_speed" is managed by Jenkins.
 export generate_incremental=""
 # Variable "upload_recovery" is managed by Jenkins.
 
