@@ -8,7 +8,7 @@ export HASTE_SERVER="https://paste.ayokaacr.tk"
 # Variable "internal_build" is managed by Jenkins.
 # Variable "device" is managed by Jenkins.
 export ROM="Project Kasumi"
-export ROM_DIR="${WORKSPACE}/kasumi"
+export ROM_DIR="${HOME}/kasumi"
 export ROM_VERSION="1.1 \"PoPiPa\""
 export official="true"
 # Variable "forceclean" is managed by Jenkins.
