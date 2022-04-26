@@ -2,11 +2,9 @@
 The Jenkins system for Project Kasumi - Yes, even our CI is open source (except personal information of course)!
 
 # Quick links
-- [Manifest](https://github.com/ProjectKasumi/android)
-- [CI infrastructure](https://ci.planet-bruno.de)
-- [ROM announcements](https://t.me/ProjectKasumi)
-- [Official chat](https://t.me/KasumiChat)
-- [Builds](https://t.me/owZ_Builds)
+- [Manifest](https://git.polycule.co/ProjectKasumi/android/manifest)
+- [CI infrastructure](https://ci.brvn0.de)
+- [Discord server](https://discord.gg/FRYUFtWDc6)
 
 -----
 

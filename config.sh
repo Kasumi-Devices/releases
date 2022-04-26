@@ -9,7 +9,7 @@ export HASTE_SERVER="https://paste.ayokaacr.tk"
 # Variable "device" is managed by Jenkins.
 export ROM="Project Kasumi"
 export ROM_DIR="${HOME}/kasumi"
-export ROM_VERSION="1.1 \"PoPiPa\""
+export ROM_VERSION="1.2 \"PoPiPa\""
 export official="true"
 # Variable "forceclean" is managed by Jenkins.
 export local_manifest_url=""

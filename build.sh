@@ -5,11 +5,6 @@ source ${my_dir}/config.sh
 export outdir="${ROM_DIR}/out/target/product/${device}"
 BUILD_START=$(date +"%s")
 echo "Build started for ${device}"
-if [ "${jenkins}" == "true" ]; then
-    telegram -i ${my_dir}/assets/build1.png -M "Build ${BUILD_DISPLAY_NAME} started for ${device}: [See Progress](${BUILD_URL}console)"
-else
-    telegram -i ${my_dir}/assets/build1.png -M "Build started for ${device}"
-fi
 source build/envsetup.sh
 export RELEASES_DIR=$(echo $(cd -))
 if [ "${official}" == "true" ]; then
@@ -64,7 +59,6 @@ export zip_name=$(echo "${finalzip_path}" | sed "s|${outdir}/||")
 export tag=$( echo "${zip_name}-$(date +%H%M)" | sed 's|.zip||')
 if [ -e "${finalzip_path}" ]; then
     echo "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
-    curl --data parse_mode=HTML --data chat_id=$TELEGRAM_CHAT --data sticker=CAACAgUAAxkBAAEHqUxh2FpZphr2MPJY8gABYovHqxtWDIUAAjsBAAJwSPEXgWsq5Pb493IjBA --request POST https://api.telegram.org/bot$TELEGRAM_TOKEN/sendSticker
     echo "Uploading"
     if [ "${internal_build}" != "true" ]; then
         gdrive upload "${finalzip_path}"
@@ -79,7 +73,6 @@ if [ -e "${finalzip_path}" ]; then
             Date: $(env TZ="${timezone}" date)" "${incremental_zip_path}"
             elif [ ! -e "${incremental_zip_path}" ] && [ "${old_target_files_exists}" == "true" ]; then
             echo "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
-            telegram -i ${my_dir}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
             exit 1
         fi
     fi
@@ -90,52 +83,25 @@ if [ -e "${finalzip_path}" ]; then
             Date: $(env TZ="${timezone}" date)" "${img_path}"
         else
             echo "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
-            telegram -i ${my_dir}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
             exit 1
         fi
     fi
     echo "Uploaded"
-    if [ "${upload_recovery}" == "true" ]; then
-        if [ "${old_target_files_exists}" == "true" ]; then
-            telegram -i ${my_dir}/assets/build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
-
-Download ROM: ["${zip_name}"]("https://github.com/${release_repo_github}/releases/download/${tag}/${zip_name}")
-Download incremental update: ["incremental_ota_update.zip"]("https://github.com/${release_repo_github}/releases/download/${tag}/incremental_ota_update.zip")
-            Download recovery: ["recovery.img"]("https://github.com/${release_repo_github}/releases/download/${tag}/recovery.img")"
-        else
-            telegram -i ${my_dir}/assets/build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
-
-Download ROM: ["${zip_name}"]("https://github.com/${release_repo_github}/releases/download/${tag}/${zip_name}")
-            Download recovery: ["recovery.img"]("https://github.com/${release_repo_github}/releases/download/${tag}/recovery.img")"
-        fi
-    else
-        if [ "${old_target_files_exists}" == "true" ]; then
-            telegram -i ${my_dir}/assets/build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
-
-Download: ["${zip_name}"]("https://github.com/${release_repo_github}/releases/download/${tag}/${zip_name}")
-            Download incremental update: ["incremental_ota_update.zip"]("https://github.com/${release_repo_github}/releases/download/${tag}/incremental_ota_update.zip")"
-        else
+    if [ "${upload_recovery}" != "true" ]; then
+        if [ "${old_target_files_exists}" != "true" ]; then
             if [ "${internal_build}" == "true" ]; then
-                telegram -i ${my_dir}/assets/build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
-
-Check ["Kasumi-CI Releases on GitHub"]("https://github.com/Kasumi-Devices/releases/releases") to get it!"
                 echo "This build is internal and won't have OTA pushed."
-                telegram -M "The build above won't have OTA pushed upon request by maintainer. ^"
             else
-                telegram -i ${my_dir}/assets/build3.png -M "Build completed successfully in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds
-
-Download: ["${zip_name}"]("https://github.com/${release_repo_github}/releases/download/${tag}/${zip_name}")
-
-Download from official storage: ["${zip_name}"]("https://dl.ayokaacr.net/4:/${device}/${zip_name}")"
-
                 echo "Generating OTA JSON and pushing it..."
                 if [ ! -d vendor/kasumiota/.git ]; then
+                    rm -rf vendor/kasumiota
                     git clone https://git.polycule.co/ProjectKasumi/android/vendor_kasumiota vendor/kasumiota
                     pushd vendor/kasumiota
                     git remote add gh https://github.com/ProjectKasumi/android_vendor_kasumiota
                     popd
                 fi
                 if [ ! -d vendor/kasumi/otagen/.git ]; then
+                    rm -rf vendor/kasumi/otagen
                     git clone https://git.polycule.co/ProjectKasumi/infra/vendor_kasumi_otagen vendor/kasumi/otagen
                 fi
                 pushd vendor/kasumiota
@@ -144,24 +110,29 @@ Download from official storage: ["${zip_name}"]("https://dl.ayokaacr.net/4:/${de
                 source gen_ota_json.sh
                 popd
                 git add .
-                git commitsigned -m "$(echo -e "Push new OTA for ${device}\n\n* Build type: ${KASUMI_BUILD_TYPE}\n\n* This commit is automated through Jenkins.")"
-                git push
-                git push gh kasumi-v1
+                git commitsigned -m "$(echo -e "Push new OTA for ${device}\n\n* Build type: ${KASUMI_BUILD_TYPE}\n\n* This commit is automated through Jenkins.")" \
+             || git comkit -s -m "$(echo -e "Push new OTA for ${device}\n\n* Build type: ${KASUMI_BUILD_TYPE}\n\n* This commit is automated through Jenkins.")"
+                git push origin HEAD:kasumi-v1 \
+             || echo "" \
+             && echo "Pushing OTA to main repositories failed. We're going to try to push it on our GitHub, ask Beru to pull it on our repos." \
+             && echo "" && git push gh HEAD:kasumi-v1 \
+             || echo "" \
+             && echo "Pushing OTA to GitHub failed. Verbosing JSON file, ask Beru to commit and push it on our main repositories." \
+             && echo "" \
+             && export tmpvar_json=$(git diff HEAD^ | grep ".json" | sed 's/.*b\///g')
+             && echo "INFO: JSON file found at ${tmpvar_json}" \
+             && echo "" \
+             && cat ${tmpvar_json} \
+             && echo ""
                 popd
                 echo "All done!"
-                telegram -M "OTA has been pushed. Users should check for updates through Settings > System > Advanced > Updater! Kasumi is going to announce the build at @ProjectKasumi now!"
-                source ${my_dir}/announce.sh
             fi
         fi
     fi
 else
     echo "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
-    telegram -i ${my_dir}/assets/build2.png -N -M "Build failed in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
     exit 1
 fi
 else
     echo "Build process ended in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds"
-    telegram -i ${my_dir}/assets/build3.png -M "Build process ended in $((BUILD_DIFF / 60)) minute(s) and $((BUILD_DIFF % 60)) seconds.
-
-This build target wasn't regular one so nothing was uploaded. Check logs for full progress."
 fi
