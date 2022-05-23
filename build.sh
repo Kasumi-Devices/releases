@@ -97,13 +97,11 @@ if [ -e "${finalzip_path}" ]; then
                     rm -rf vendor/kasumiota
                     git clone https://git.polycule.co/ProjectKasumi/android/vendor_kasumiota vendor/kasumiota
                     pushd vendor/kasumiota
-                    git remote add gh https://github.com/ProjectKasumi/android_vendor_kasumiota
+                    git remote add gh https://github.com/ProjectKasumi/vendor_kasumiota
                     popd
                 fi
-                if [ ! -d vendor/kasumi/otagen/.git ]; then
-                    rm -rf vendor/kasumi/otagen
-                    git clone https://git.polycule.co/ProjectKasumi/infra/vendor_kasumi_otagen vendor/kasumi/otagen
-                fi
+                rm -rf vendor/kasumi/otagen
+                git clone https://git.polycule.co/ProjectKasumi/infra/vendor_kasumi_otagen vendor/kasumi/otagen
                 pushd vendor/kasumiota
                 git pull
                 pushd ../kasumi/otagen
@@ -111,13 +109,13 @@ if [ -e "${finalzip_path}" ]; then
                 popd
                 git add .
                 git commitsigned -m "$(echo -e "Push new OTA for ${device}\n\n* Build type: ${KASUMI_BUILD_TYPE}\n\n* This commit is automated through Jenkins.")" \
-             || git comkit -s -m "$(echo -e "Push new OTA for ${device}\n\n* Build type: ${KASUMI_BUILD_TYPE}\n\n* This commit is automated through Jenkins.")"
+             || git commit -s -m "$(echo -e "Push new OTA for ${device}\n\n* Build type: ${KASUMI_BUILD_TYPE}\n\n* This commit is automated through Jenkins.")"
                 git push origin HEAD:kasumi-v1 \
              || echo "" \
-             && echo "Pushing OTA to main repositories failed. We're going to try to push it on our GitHub, ask Beru to pull it on our repos." \
+             && echo "Pushing OTA to main repositories failed. We're going to try to push it on our GitHub, ask Kasumi to pull it on our repos." \
              && echo "" && git push gh HEAD:kasumi-v1 \
              || echo "" \
-             && echo "Pushing OTA to GitHub failed. Verbosing JSON file, ask Beru to commit and push it on our main repositories." \
+             && echo "Pushing OTA to GitHub failed. Verbosing JSON file, ask Kasumi to commit and push it on our main repositories." \
              && echo "" \
              && export tmpvar_json=$(git diff HEAD^ | grep ".json" | sed 's/.*b\///g')
              && echo "INFO: JSON file found at ${tmpvar_json}" \

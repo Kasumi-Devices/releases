@@ -10,6 +10,6 @@ The Jenkins system for Project Kasumi - Yes, even our CI is open source (except 
 
 "releases" repo is an original work by JarlPenguin.
 
-Announcements images, regular maintainership and bringups are done by Beru Shinsetsu.
+Announcements images, regular maintainership and bringups are done by Beru Hinode.
 
-Copyright (C) 2022 Beru Shinsetsu (On behalf of Project Kasumi).
+Copyright (C) 2022 Beru Hinode (On behalf of Project Kasumi).

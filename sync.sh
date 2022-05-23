@@ -7,7 +7,7 @@ if [ "${no_sync}" != "true" ]; then
     fi
     repo sync build/make external/tuuru vendor/kasumi
     source build/envsetup.sh
-    reposync ${sync_speed} ${sync_projs}
+    syncrepos ${sync_projs} || reposync ${sync_speed} ${sync_projs}
     syncsuccessful="${?}"
     SYNC_END=$(date +"%s")
     SYNC_DIFF=$((SYNC_END - SYNC_START))
