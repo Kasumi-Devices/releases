@@ -17,7 +17,7 @@ export manifest_url_display="https://git.polycule.co/ProjectKasumi/android/manif
 export manifest_url="https://git.polycule.co/ProjectKasumi/infra/manifest.git" # This manifest will be used for syncing to reduce heavy use of Git separately.
 export rom_vendor_name="kasumi"
 export branch="kasumi-v1"
-# Variable "bacon" is managed by jenkins
+# Variable "bacon" is managed by Jenkins
 # Variable "buildtype" is managed by Jenkins.
 # Variable "clean" is managed by Jenkins.
 # Variable "no_sync" is managed by Jenkins.
