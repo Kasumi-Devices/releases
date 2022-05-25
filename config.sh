@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export GITHUB_USER="Beru Shinsetsu"
+export GITHUB_USER="Beru Hinode"
 export GITHUB_EMAIL="windowz414@1337.lgbt"
 
 export HASTE_SERVER="https://paste.ayokaacr.tk"

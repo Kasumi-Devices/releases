@@ -112,10 +112,10 @@ if [ -e "${finalzip_path}" ]; then
              || git commit -s -m "$(echo -e "Push new OTA for ${device}\n\n* Build type: ${KASUMI_BUILD_TYPE}\n\n* This commit is automated through Jenkins.")"
                 git push origin HEAD:kasumi-v1 \
              || echo "" \
-             && echo "Pushing OTA to main repositories failed. We're going to try to push it on our GitHub, ask Kasumi to pull it on our repos." \
+             && echo "Pushing on GitHub, ask Kasumi to pull it on our repos if previous push failed." \
              && echo "" && git push gh HEAD:kasumi-v1 \
              || echo "" \
-             && echo "Pushing OTA to GitHub failed. Verbosing JSON file, ask Kasumi to commit and push it on our main repositories." \
+             && echo "Verbosing JSON. If all pushes failed, ping Kasumi in #maintainers-discussion on Discord server and she'll push it manually." \
              && echo "" \
              && export tmpvar_json=$(git diff HEAD^ 2>&1 | grep "b/.*json" | sed 's/.*b\///g' | uniq) \
              && echo "INFO: JSON file found at ${tmpvar_json}" \
