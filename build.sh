@@ -21,10 +21,13 @@ if [ "${ccache}" == "true" ] && [ -n "${ccache_size}" ]; then
     exit 1
 fi
 rm "${outdir}"/*$(date +%Y)*.zip*
-if [ "${clean}" == "clean" ]; then
+if [ "${clean}" != "clean" ]; then
     export vibecheck=nohype
-    elif [ "${clean}" == "installclean" ]; then
-    make installclean
+    if [ "${clean}" == "installclean" ]; then
+        make installclean
+    fi
+else
+    export -n vibecheck
 fi
 if [ "${bacon}" == "bandori" ]; then
     play live ${rom_vendor_name}_${device}-${buildtype} ${vibecheck}
