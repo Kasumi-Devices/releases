@@ -117,7 +117,7 @@ if [ -e "${finalzip_path}" ]; then
              || echo "" \
              && echo "Pushing OTA to GitHub failed. Verbosing JSON file, ask Kasumi to commit and push it on our main repositories." \
              && echo "" \
-             && export tmpvar_json=$(git diff HEAD^ | grep ".json" | sed 's/.*b\///g')
+             && export tmpvar_json=$(git diff HEAD^ 2>&1 | grep "b/.*json" | sed 's/.*b\///g' | uniq) \
              && echo "INFO: JSON file found at ${tmpvar_json}" \
              && echo "" \
              && cat ${tmpvar_json} \

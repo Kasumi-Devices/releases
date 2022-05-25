@@ -8,7 +8,7 @@ export HASTE_SERVER="https://paste.ayokaacr.tk"
 # Variable "internal_build" is managed by Jenkins.
 # Variable "device" is managed by Jenkins.
 export ROM="Project Kasumi"
-export ROM_DIR="${HOME}/kasumi"
+export ROM_DIR="${HOME}/kasumi-r"
 export ROM_VERSION="1.2 \"PoPiPa\""
 export official="true"
 # Variable "forceclean" is managed by Jenkins.
@@ -29,7 +29,7 @@ export generate_incremental=""
 export ccache="false"
 export ccache_size=""
 
-export jenkins="true"
+export jenkins="false"
 
 export release_repo_github="Kasumi-Devices/releases"
 export release_repo_id_polycule="42"
