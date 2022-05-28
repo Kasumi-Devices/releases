@@ -2,8 +2,8 @@
 if [ "${no_sync}" != "true" ]; then
     echo "Sync started for ${manifest_url}/tree/${branch}"
     SYNC_START=$(date +"%s")
-    if [ -f .repo/local_manifests/default.xml ]; then
-        rm .repo/local_manifests/default.xml
+    if [ -d .repo/local_manifests/ ]; then
+        rm -rf .repo/local_manifests/
     fi
     repo sync build/make external/tuuru vendor/kasumi
     source build/envsetup.sh
