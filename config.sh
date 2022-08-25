@@ -2,6 +2,8 @@
 
 export GITHUB_USER="Beru Hinode"
 export GITHUB_EMAIL="windowz414@1337.lgbt"
+export OLD_GITHUB_USER="$(git config --global --get user.name)"
+export OLD_GITHUB_EMAIL="$(git config --global --get user.email)"
 
 export HASTE_SERVER="https://paste.ayokaacr.tk"
 
@@ -9,7 +11,7 @@ export HASTE_SERVER="https://paste.ayokaacr.tk"
 # Variable "device" is managed by Jenkins.
 export ROM="Project Kasumi"
 export ROM_DIR="${HOME}/kasumi-r"
-export ROM_VERSION="1.2 \"PoPiPa\""
+export ROM_VERSION="1.4 \"PoPiPa\""
 export official="true"
 # Variable "forceclean" is managed by Jenkins.
 export local_manifest_url=""

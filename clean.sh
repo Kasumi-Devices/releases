@@ -20,30 +20,20 @@ if [ -z "${GITHUB_TOKEN}" ]; then
     fi
 fi
 
-GITLAB_HOST="git.polycule.co"
-
-if [ -z "${POLYAMOROUS_TOKEN}" ]; then
-    if [ -z "${GITLAB_TOKEN}" ]; then
-        if [ -z "${GLAB_TOKEN}" ]; then
-            echo "Please set POLYAMOROUS_TOKEN, GITLAB_TOKEN or GLAB_TOKEN before continuing."
-            exit 1
-        else
-            export POLYAMOROUS_TOKEN="${GLAB_TOKEN}"
-        fi
-    else
-        export POLYAMOROUS_TOKEN="${GITLAB_TOKEN}"
-    fi
-fi
-
 mkdir -p "${ROM_DIR}"
 cd "${ROM_DIR}"
 if [ -d "${ROM_DIR}/out" ]; then
+source build/envsetup.sh
 make clean -j$(nproc --all)
 make clobber -j$(nproc --all)
 fi
 
 if [ ! -d "${ROM_DIR}/.repo" ]; then
 echo "Initializing repository..."
+git config --global user.email "${GITHUB_EMAIL}"
+git config --global user.name "${GITHUB_USER}"
 repo init -u "${manifest_url}" -b "${branch}" --depth 1
+git config --global user.email "${OLD_GITHUB_EMAIL}"
+git config --global user.name "${OLD_GITHUB_USER}"
 fi
 source "${my_dir}"/sync.sh

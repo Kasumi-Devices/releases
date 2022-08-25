@@ -68,7 +68,6 @@ if [ -e "${finalzip_path}" ]; then
     fi
     github-release "${release_repo_github}" "${tag}" "master" "${ROM} for ${device}
     Date: $(env TZ="${timezone}" date)" "${finalzip_path}"
-    curl --header 'Content-Type: application/json' --header "PRIVATE-TOKEN: ${POLYAMOROUS_TOKEN}" --data '{ "name": "${ROM} ${ROM_VERSION} for ${device}", "tag_name": "${tag}", "ref": "master", "assets": { "links": [{ "name": "${zip_name}", "url": "https://github.com/${release_repo_github}/releases/download/${tag}/${zip_name}", "filepath": "/${zip_name}", "link_type":"package" }] } }' --request POST "https://git.polycule.co/api/v4/projects/${release_repo_id_polycule}/releases"
     if [ "${generate_incremental}" == "true" ]; then
         if [ -e "${incremental_zip_path}" ] && [ "${old_target_files_exists}" == "true" ]; then
             github-release "${release_repo_github}" "${tag}" "master" "${ROM} for ${device}
@@ -98,27 +97,23 @@ if [ -e "${finalzip_path}" ]; then
                 echo "Generating OTA JSON and pushing it..."
                 if [ ! -d vendor/kasumiota/.git ]; then
                     rm -rf vendor/kasumiota
-                    git clone https://git.polycule.co/ProjectKasumi/android/vendor_kasumiota vendor/kasumiota
-                    pushd vendor/kasumiota
-                    git remote add gh https://github.com/ProjectKasumi/vendor_kasumiota
-                    popd
+                    git clone https://github.com/ProjectKasumi/vendor_kasumiota -b ${branch} vendor/kasumiota
                 fi
                 rm -rf vendor/kasumi/otagen
-                git clone https://git.polycule.co/ProjectKasumi/infra/vendor_kasumi_otagen vendor/kasumi/otagen
+                git clone https://github.com/Kasumi-Devices/android_vendor_kasumi_otagen vendor/kasumi/otagen
                 pushd vendor/kasumiota
                 git pull
                 pushd ../kasumi/otagen
                 source gen_ota_json.sh
                 popd
                 git add .
+                git config user.name "${GITHUB_NAME}"
+                git config user.email "${GITHUB_EMAIL}"
                 git commitsigned -m "$(echo -e "Push new OTA for ${device}\n\n* Build type: ${KASUMI_BUILD_TYPE}\n\n* This commit is automated through Jenkins.")" \
              || git commit -s -m "$(echo -e "Push new OTA for ${device}\n\n* Build type: ${KASUMI_BUILD_TYPE}\n\n* This commit is automated through Jenkins.")"
                 git push origin HEAD:kasumi-v1 \
              || echo "" \
-             && echo "Pushing on GitHub, ask Kasumi to pull it on our repos if previous push failed." \
-             && echo "" && git push gh HEAD:kasumi-v1 \
-             || echo "" \
-             && echo "Verbosing JSON. If all pushes failed, ping Kasumi in #maintainers-discussion on Discord server and she'll push it manually." \
+             && echo "Verbosing JSON. If all pushes failed, ping Beru in #maintainers-discussion on Discord server and she'll push it manually." \
              && echo "" \
              && export tmpvar_json=$(git diff HEAD^ 2>&1 | grep "b/.*json" | sed 's/.*b\///g' | uniq) \
              && echo "INFO: JSON file found at ${tmpvar_json}" \
